@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Container from "@/components/Container";
+import LogoMark from "@/components/Logo";
 import { products } from "@/data/products";
 import { site } from "@/data/site";
 
 function Logo() {
   return (
     <div className="mb-4 flex items-center gap-2 font-display text-[26px] tracking-[-0.02em] text-white">
-      <span className="inline-block size-3 rounded-full bg-orange" />
+      <LogoMark size={30} tile={false} />
       Valenca
     </div>
   );

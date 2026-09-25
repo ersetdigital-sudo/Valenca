@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Button from "@/components/Button";
+import Logo from "@/components/Logo";
 
 type LinkItem = { label: string; href: string };
 
@@ -36,7 +37,7 @@ export default function Header({
           href="/"
           className="flex items-center gap-2 font-display text-[26px] tracking-[-0.02em]"
         >
-          <span className="inline-block size-3 rounded-full bg-orange" />
+          <Logo size={30} />
           Valenca
         </Link>
 
