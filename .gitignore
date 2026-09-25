@@ -11,3 +11,6 @@ next-env.d.ts
 .omo
 .verify
 .opencode
+
+# source html lama (bukan bagian app)
+html-source
