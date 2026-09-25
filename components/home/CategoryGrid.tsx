@@ -16,7 +16,7 @@ export default function CategoryGrid() {
           title="Mau Bayar Apa Hari Ini?"
           desc="Pilih layanan yang kamu butuhkan. Prosesnya cepat, biaya admin transparan, tanpa biaya tersembunyi."
         />
-        <div className="grid gap-[18px] min-[501px]:grid-cols-2 min-[901px]:grid-cols-4">
+        <div className="grid grid-cols-2 gap-[18px] min-[901px]:grid-cols-4">
           {products.map((p, i) => (
             <Reveal key={p.id} delay={(i % 4) * 0.06}>
               <Link
