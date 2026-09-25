@@ -1,59 +1,124 @@
-import Container from "@/components/Container";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Button from "@/components/Button";
-import Reveal from "@/components/Reveal";
-import { MiscIcon } from "@/components/icons";
+
+const slides = [
+  {
+    src: "/banners/banner-utama.webp",
+    height: 811,
+    alt: "Valenca — semua pembayaran dalam satu tempat: pulsa, paket data, token listrik, PDAM, BPJS, dan lainnya",
+  },
+  {
+    src: "/banners/banner-data.webp",
+    height: 812,
+    alt: "Beli paket data lebih murah — Telkomsel, XL, Indosat, Tri, Axis, dan Smartfren",
+  },
+  {
+    src: "/banners/banner-pln.webp",
+    height: 811,
+    alt: "Bayar tagihan listrik dan beli token PLN lebih praktis",
+  },
+];
 
 export default function Hero() {
+  const [index, setIndex] = useState(0);
+  const paused = useRef(false);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const t = setInterval(() => {
+      if (!paused.current) setIndex((i) => (i + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  const go = (i: number) => setIndex((i + slides.length) % slides.length);
+
   return (
-    <section className="relative overflow-hidden bg-white pb-[70px] pt-[60px]">
+    <section className="relative overflow-hidden bg-white pb-[48px] pt-[40px]">
       <div className="absolute inset-0 bg-tint" />
       <div className="pointer-events-none absolute -right-[100px] -top-[180px] size-[420px] rounded-full bg-navy opacity-[0.14] blur-[60px]" />
       <div className="pointer-events-none absolute -bottom-[120px] -left-[80px] size-[320px] rounded-full bg-orange opacity-[0.12] blur-[50px]" />
-      <Container>
-        <div className="relative z-10 grid items-center gap-10 max-[900px]:grid-cols-1 max-[900px]:text-center min-[901px]:grid-cols-2">
-          <Reveal>
-            <h1 className="font-display text-[clamp(36px,6vw,62px)] leading-[1.08] tracking-[-0.02em]">
-              Bayar <span className="text-orange">Cepat</span>,<br />
-              Hidup Lebih <span className="text-orange">Ringan</span>.
-            </h1>
-            <p className="mt-5 max-w-[48ch] text-[17px] text-ink max-[900px]:mx-auto">
-              Pulsa, token listrik, tagihan air, BPJS, internet, hingga angsuran
-              — semua bisa dibayar dalam hitungan detik. Tanpa perlu buat akun,
-              langsung bayar via QRIS.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-[14px] max-[900px]:justify-center">
-              <Button variant="solid" href="/#layanan">
-                Pilih Layanan
-              </Button>
-              <Button variant="outline" href="/#cara">
-                Lihat Cara Bayar
-              </Button>
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 sm:px-6">
+        <h1 className="sr-only">
+          Valenca — Bayar Cepat, Hidup Lebih Ringan.
+        </h1>
+        <div
+          className="relative z-10"
+          onMouseEnter={() => (paused.current = true)}
+          onMouseLeave={() => (paused.current = false)}
+        >
+          <div className="relative">
+            <div className="overflow-hidden rounded-card border-2 border-navy shadow-hard">
+              <div
+                className="flex w-full transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${index * 100}%)` }}
+              >
+                {slides.map((s, i) => (
+                  <Image
+                    key={s.src}
+                    src={s.src}
+                    alt={s.alt}
+                    width={1938}
+                    height={s.height}
+                    priority={i === 0}
+                    sizes="(min-width: 1440px) 1392px, calc(100vw - 32px)"
+                    className="block h-auto w-full shrink-0"
+                  />
+                ))}
+              </div>
             </div>
-          </Reveal>
 
-          <Reveal
-            delay={0.1}
-            className="relative flex min-h-[340px] items-center justify-center max-[900px]:mt-[30px] max-[900px]:min-h-0"
-          >
-            <div className="flex size-[320px] flex-col items-center justify-center rounded-full border-4 border-navy bg-navy text-white shadow-[0_30px_60px_-20px_rgba(20,33,61,.45)] max-[900px]:size-[260px]">
-              <b className="font-display text-[54px] leading-none max-[900px]:text-[42px]">
-                1.4M+
-              </b>
-              <span className="mt-[6px] text-sm font-medium opacity-[0.92]">
-                Transaksi Berhasil
-              </span>
-            </div>
-            <div className="absolute left-[-10px] top-5 flex items-center gap-[10px] rounded-btn border-2 border-navy bg-white px-[18px] py-3 text-[13px] font-semibold text-ok shadow-hard max-[900px]:hidden">
-              <MiscIcon name="circleCheck" className="size-[22px]" />
-              100% Aman
-            </div>
-            <div className="absolute bottom-10 right-0 flex items-center gap-[10px] rounded-btn border-2 border-navy bg-white px-[18px] py-3 text-[13px] font-semibold text-orange shadow-hard max-[900px]:hidden">
-              <MiscIcon name="bolt" className="size-[22px]" />
-              Proses &lt; 30 dtk
-            </div>
-          </Reveal>
+            <button
+              type="button"
+              aria-label="Banner sebelumnya"
+              onClick={() => go(index - 1)}
+              className="absolute left-3 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full border-2 border-navy bg-white text-navy shadow-hard transition hover:bg-orange hover:text-white max-[700px]:hidden"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              aria-label="Banner berikutnya"
+              onClick={() => go(index + 1)}
+              className="absolute right-3 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full border-2 border-navy bg-white text-navy shadow-hard transition hover:bg-orange hover:text-white max-[700px]:hidden"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-[10px]">
+            {slides.map((s, i) => (
+              <button
+                key={s.src}
+                type="button"
+                aria-label={`Tampilkan banner ${i + 1}`}
+                aria-current={i === index}
+                onClick={() => go(i)}
+                className={`h-[10px] rounded-full border-2 border-navy transition-all duration-200 ${
+                  i === index ? "w-7 bg-orange" : "w-[10px] bg-white hover:bg-orange/40"
+                }`}
+              />
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-[14px]">
+            <Button variant="solid" href="/#layanan">
+              Pilih Layanan
+            </Button>
+            <Button variant="outline" href="/#cara">
+              Lihat Cara Bayar
+            </Button>
+          </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

@@ -18,3 +18,6 @@ html-source
 .vercel
 .env*
 devlog.txt
+
+# raw banner sources (optimized copies live in /public)
+/Banner/
