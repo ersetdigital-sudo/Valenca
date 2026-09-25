@@ -21,7 +21,7 @@ export default function CategoryGrid() {
             <Reveal key={p.id} delay={(i % 4) * 0.06}>
               <Link
                 href={`/bayar/${p.id}`}
-                className="relative block overflow-hidden rounded-card border-2 border-navy bg-white px-5 py-[26px] text-center shadow-hard transition duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_#14213d]"
+                className="relative flex h-full flex-col justify-center overflow-hidden rounded-card border-2 border-navy bg-white px-5 py-[26px] text-center shadow-hard transition duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_#14213d]"
               >
                 <span
                   className={`absolute inset-0 opacity-45 ${cardTints[i % 4]}`}
