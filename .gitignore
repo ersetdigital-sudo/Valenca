@@ -14,3 +14,6 @@ next-env.d.ts
 
 # source html lama (bukan bagian app)
 html-source
+
+.vercel
+.env*
