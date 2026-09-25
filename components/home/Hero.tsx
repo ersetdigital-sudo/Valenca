@@ -22,6 +22,12 @@ const slides = [
   },
 ];
 
+const stats = [
+  { value: "1.4M+", label: "Transaksi Sukses" },
+  { value: "4.9/5", label: "Rating Pengguna" },
+  { value: "<30 dtk", label: "Proses Otomatis" },
+];
+
 export default function Hero() {
   const [index, setIndex] = useState(0);
   const paused = useRef(false);
@@ -38,11 +44,11 @@ export default function Hero() {
   const go = (i: number) => setIndex((i + slides.length) % slides.length);
 
   return (
-    <section className="relative overflow-hidden bg-white pb-[48px] pt-[40px]">
+    <section className="relative overflow-hidden bg-white pb-10 pt-8">
       <div className="absolute inset-0 bg-tint" />
       <div className="pointer-events-none absolute -right-[100px] -top-[180px] size-[420px] rounded-full bg-navy opacity-[0.14] blur-[60px]" />
       <div className="pointer-events-none absolute -bottom-[120px] -left-[80px] size-[320px] rounded-full bg-orange opacity-[0.12] blur-[50px]" />
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 sm:px-6">
+      <div className="relative z-10 mx-auto w-full max-w-[1760px] px-4 sm:px-6">
         <h1 className="sr-only">
           Valenca — Bayar Cepat, Hidup Lebih Ringan.
         </h1>
@@ -65,7 +71,7 @@ export default function Hero() {
                     width={1938}
                     height={s.height}
                     priority={i === 0}
-                    sizes="(min-width: 1440px) 1392px, calc(100vw - 32px)"
+                    sizes="(min-width: 1760px) 1712px, calc(100vw - 48px)"
                     className="block h-auto w-full shrink-0"
                   />
                 ))}
@@ -116,6 +122,25 @@ export default function Hero() {
             <Button variant="outline" href="/#cara">
               Lihat Cara Bayar
             </Button>
+          </div>
+
+          <div
+            data-hero-stats
+            className="mx-auto mt-7 grid max-w-[720px] grid-cols-3 gap-y-4 text-center"
+          >
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                className={`px-2 sm:px-6 ${i > 0 ? "sm:border-l-2 sm:border-line" : ""}`}
+              >
+                <div className="font-display text-[20px] leading-none text-navy sm:text-[26px]">
+                  {s.value}
+                </div>
+                <div className="mt-1.5 text-[12px] leading-snug text-muted sm:text-[13px]">
+                  {s.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
