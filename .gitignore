@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+
+# tooling / agent dirs
+.codegraph
+.commandcode
+.omo
+.verify
+.opencode
