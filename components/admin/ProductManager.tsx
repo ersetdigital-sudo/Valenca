@@ -15,6 +15,14 @@ const primaryBtn =
 const secondaryBtn =
   "inline-flex items-center justify-center gap-2 rounded-[10px] border border-line bg-white px-3.5 py-2 text-[13px] font-medium text-ink transition hover:bg-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy";
 
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function emptyDraft(): Product {
   return {
     id: "",
@@ -33,7 +41,8 @@ function emptyDraft(): Product {
 
 function clientValidate(p: Product): string | null {
   if (!p.nama.trim()) return "Nama produk wajib diisi.";
-  if (!p.id.trim()) return "ID produk wajib diisi.";
+  if (!p.id.trim())
+    return "Alamat halaman masih kosong — pakai huruf atau angka di nama produk.";
   if (p.items.length === 0) return "Minimal satu item harga.";
   for (const it of p.items) {
     if (!it.label.trim()) return "Setiap item wajib punya nama.";
@@ -49,6 +58,7 @@ export default function ProductManager({ products: initial }: { products: Produc
   const [products, setProducts] = useState<Product[]>(initial);
   const [draft, setDraft] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [idAuto, setIdAuto] = useState(true);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
 
@@ -70,12 +80,14 @@ export default function ProductManager({ products: initial }: { products: Produc
   function startNew() {
     setNotice(null);
     setIsNew(true);
+    setIdAuto(true);
     setDraft(emptyDraft());
   }
 
   function startEdit(p: Product) {
     setNotice(null);
     setIsNew(false);
+    setIdAuto(false);
     setDraft({ ...p, items: p.items.map((it) => ({ ...it })) });
   }
 
@@ -149,7 +161,8 @@ export default function ProductManager({ products: initial }: { products: Produc
             Produk &amp; Harga
           </h1>
           <p className="mt-1 text-sm text-ink">
-            {products.length} produk aktif — langsung tampil di halaman bayar.
+            {products.length} produk aktif — tiap produk jadi satu kategori di
+            beranda dan punya halaman sendiri (/bayar/…).
           </p>
         </div>
         <button type="button" onClick={startNew} className={primaryBtn}>
@@ -164,7 +177,7 @@ export default function ProductManager({ products: initial }: { products: Produc
           >
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Produk baru
+          Tambah produk / kategori
         </button>
       </div>
 
@@ -199,30 +212,49 @@ export default function ProductManager({ products: initial }: { products: Produc
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className={labelCls} htmlFor="p-nama">
-                Nama produk
+                Nama produk / kategori
               </label>
               <input
                 id="p-nama"
                 className={inputCls}
                 value={draft.nama}
-                onChange={(e) => patch("nama", e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setDraft((d) =>
+                    d
+                      ? {
+                          ...d,
+                          nama: value,
+                          id: isNew && idAuto ? slugify(value) : d.id,
+                        }
+                      : d,
+                  );
+                }}
                 placeholder="Paket Data"
               />
             </div>
             <div>
               <label className={labelCls} htmlFor="p-id">
-                ID (URL: /bayar/…)
+                Alamat halaman (ID)
               </label>
               <input
                 id="p-id"
                 className={inputCls}
                 value={draft.id}
                 disabled={!isNew}
-                onChange={(e) =>
-                  patch("id", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
-                }
-                placeholder="data"
+                onChange={(e) => {
+                  setIdAuto(false);
+                  patch("id", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
+                }}
+                placeholder="otomatis dari nama"
               />
+              <p className="mt-1.5 font-mono text-xs text-navy">
+                {draft.id
+                  ? isNew
+                    ? `→ /bayar/${draft.id}`
+                    : `→ /bayar/${draft.id} (tidak bisa diubah)`
+                  : "→ /bayar/… terisi otomatis dari nama"}
+              </p>
             </div>
             <div>
               <label className={labelCls} htmlFor="p-tag">
@@ -234,85 +266,6 @@ export default function ProductManager({ products: initial }: { products: Produc
                 value={draft.tag}
                 onChange={(e) => patch("tag", e.target.value)}
                 placeholder="Semua Operator"
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-icon">
-                Ikon
-              </label>
-              <div className="flex items-center gap-3">
-                <select
-                  id="p-icon"
-                  className={inputCls}
-                  value={draft.icon}
-                  onChange={(e) => patch("icon", e.target.value as Product["icon"])}
-                >
-                  {ICON_NAMES.map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-                <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-line bg-tint text-navy">
-                  <Icon name={draft.icon} className="size-5" />
-                </span>
-              </div>
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-inputlabel">
-                Label input pelanggan
-              </label>
-              <input
-                id="p-inputlabel"
-                className={inputCls}
-                value={draft.inputLabel}
-                onChange={(e) => patch("inputLabel", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-target">
-                Label ringkasan transaksi
-              </label>
-              <input
-                id="p-target"
-                className={inputCls}
-                value={draft.targetLabel}
-                onChange={(e) => patch("targetLabel", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-ph">
-                Placeholder
-              </label>
-              <input
-                id="p-ph"
-                className={inputCls}
-                value={draft.placeholder}
-                onChange={(e) => patch("placeholder", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-hint">
-                Hint di bawah input
-              </label>
-              <input
-                id="p-hint"
-                className={inputCls}
-                value={draft.hint}
-                onChange={(e) => patch("hint", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-min">
-                Panjang input minimal
-              </label>
-              <input
-                id="p-min"
-                type="number"
-                min={1}
-                className={inputCls}
-                value={draft.min}
-                onChange={(e) => patch("min", Math.max(1, Number(e.target.value) || 1))}
               />
             </div>
             <div>
@@ -329,7 +282,97 @@ export default function ProductManager({ products: initial }: { products: Produc
                 onChange={(e) => patch("admin", Math.max(0, Number(e.target.value) || 0))}
               />
             </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls} htmlFor="p-icon">
+                Ikon
+              </label>
+              <div className="flex items-center gap-3">
+                <select
+                  id="p-icon"
+                  className={`${inputCls} sm:max-w-[280px]`}
+                  value={draft.icon}
+                  onChange={(e) => patch("icon", e.target.value as Product["icon"])}
+                >
+                  {ICON_NAMES.map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-line bg-tint text-navy">
+                  <Icon name={draft.icon} className="size-5" />
+                </span>
+              </div>
+            </div>
           </div>
+
+          <details className="mt-4 rounded-xl border border-line bg-tint/40 open:bg-white">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-[13px] font-medium text-ink transition hover:text-navy [&::-webkit-details-marker]:hidden">
+              <span>Pengaturan input pelanggan (opsional)</span>
+              <span className="text-xs font-normal text-ink">
+                Label kolom, placeholder, hint, panjang nomor
+              </span>
+            </summary>
+            <div className="grid gap-4 border-t border-line p-4 sm:grid-cols-2">
+              <div>
+                <label className={labelCls} htmlFor="p-inputlabel">
+                  Label input pelanggan
+                </label>
+                <input
+                  id="p-inputlabel"
+                  className={inputCls}
+                  value={draft.inputLabel}
+                  onChange={(e) => patch("inputLabel", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls} htmlFor="p-target">
+                  Label ringkasan transaksi
+                </label>
+                <input
+                  id="p-target"
+                  className={inputCls}
+                  value={draft.targetLabel}
+                  onChange={(e) => patch("targetLabel", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls} htmlFor="p-ph">
+                  Placeholder
+                </label>
+                <input
+                  id="p-ph"
+                  className={inputCls}
+                  value={draft.placeholder}
+                  onChange={(e) => patch("placeholder", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls} htmlFor="p-hint">
+                  Hint di bawah input
+                </label>
+                <input
+                  id="p-hint"
+                  className={inputCls}
+                  value={draft.hint}
+                  onChange={(e) => patch("hint", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls} htmlFor="p-min">
+                  Panjang input minimal
+                </label>
+                <input
+                  id="p-min"
+                  type="number"
+                  min={1}
+                  className={inputCls}
+                  value={draft.min}
+                  onChange={(e) => patch("min", Math.max(1, Number(e.target.value) || 1))}
+                />
+              </div>
+            </div>
+          </details>
 
           <div className="mt-6">
             <div className="mb-2 flex items-center justify-between gap-3">
