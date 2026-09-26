@@ -11,12 +11,14 @@ const homeLinks: LinkItem[] = [
   { label: "Layanan", href: "/#layanan" },
   { label: "Keunggulan", href: "/#kenapa" },
   { label: "Cara Bayar", href: "/#cara" },
+  { label: "Cek Transaksi", href: "/cek-transaksi" },
   { label: "FAQ", href: "/#faq" },
 ];
 
 const legalLinks: LinkItem[] = [
   { label: "Layanan", href: "/#layanan" },
   { label: "Cara Bayar", href: "/#cara" },
+  { label: "Cek Transaksi", href: "/cek-transaksi" },
   { label: "FAQ", href: "/#faq" },
 ];
 

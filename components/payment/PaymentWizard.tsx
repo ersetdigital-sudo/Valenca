@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Container from "@/components/Container";
 import { Icon, SpinnerIcon, SuccessIcon } from "@/components/icons";
+import { createOrderAction } from "@/app/bayar/actions";
 import { rupiah, shortLabel } from "@/lib/format";
 import { detectOperator } from "@/lib/operators";
 import { nominalCategories } from "@/data/products";
-import { site } from "@/data/site";
 import type { Product, ProductItem } from "@/types";
 
 type View = "form" | "checkout" | "status";
@@ -52,7 +53,15 @@ function TotalRow({
   );
 }
 
-export default function PaymentWizard({ product }: { product: Product }) {
+export default function PaymentWizard({
+  product,
+  qrisUrl,
+  whatsapp,
+}: {
+  product: Product;
+  qrisUrl?: string | null;
+  whatsapp?: string;
+}) {
   const [view, setView] = useState<View>("form");
   const [step, setStep] = useState(1);
   const [target, setTarget] = useState("");
@@ -65,6 +74,8 @@ export default function PaymentWizard({ product }: { product: Product }) {
   const [status, setStatus] = useState<"waiting" | "success">("waiting");
   const [token, setToken] = useState<string | null>(null);
   const [seconds, setSeconds] = useState(10 * 60);
+  const [placing, setPlacing] = useState(false);
+  const [placeErr, setPlaceErr] = useState<string | null>(null);
   const targetRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -120,7 +131,7 @@ export default function PaymentWizard({ product }: { product: Product }) {
     window.scrollTo({ top: 0 });
   }
 
-  function toCheckout() {
+  async function toCheckout() {
     if (digits < product.min) {
       targetError();
       setStep(1);
@@ -132,16 +143,37 @@ export default function PaymentWizard({ product }: { product: Product }) {
       setStep(2);
       return;
     }
-    setTrxId("VLC-" + Date.now().toString().slice(-8));
-    setTimeStr(
-      new Date().toLocaleString("id-ID", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      })
-    );
-    setSeconds(10 * 60);
-    setView("checkout");
-    window.scrollTo({ top: 0 });
+    if (placing) return;
+    setPlacing(true);
+    setPlaceErr(null);
+    try {
+      const result = await createOrderAction({
+        productId: product.id,
+        productName: product.nama,
+        itemLabel: item.label,
+        targetLabel: product.targetLabel,
+        targetValue: target,
+        price,
+        adminFee: product.admin,
+        total,
+      });
+      if (!result.ok) {
+        setPlaceErr(result.error);
+        return;
+      }
+      setTrxId(result.kode);
+      setTimeStr(
+        new Date().toLocaleString("id-ID", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      );
+      setSeconds(10 * 60);
+      setView("checkout");
+      window.scrollTo({ top: 0 });
+    } finally {
+      setPlacing(false);
+    }
   }
 
   function backToForm() {
@@ -404,13 +436,18 @@ export default function PaymentWizard({ product }: { product: Product }) {
                       <ButtonNav variant="outline" onClick={() => goStep(2)}>
                         ← Ubah Nominal
                       </ButtonNav>
-                      <ButtonNav variant="solid" onClick={toCheckout}>
-                        Bayar via QRIS →
+                      <ButtonNav variant="solid" onClick={() => void toCheckout()}>
+                        {placing ? "Membuat pesanan…" : "Bayar via QRIS →"}
                       </ButtonNav>
                     </div>
                     <p className="mt-3 text-center text-xs text-muted">
                       Tanpa login. Tanpa registrasi.
                     </p>
+                    {placeErr && (
+                      <p className="mt-2 text-center text-[13px] text-[#EF4444]">
+                        {placeErr}
+                      </p>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -465,12 +502,25 @@ export default function PaymentWizard({ product }: { product: Product }) {
                 <h4 className="mb-[18px] text-[13px] uppercase tracking-[0.1em] text-muted">
                   Scan &amp; Bayar
                 </h4>
-                {/* GANTI MANUAL: gambar QR code QRIS milik client */}
-                <div className="mx-auto grid size-[220px] place-items-center rounded-card border-2 border-navy bg-white p-[10px] shadow-hard">
-                  <div className="grid h-full w-full place-items-center rounded-lg bg-navy font-display text-[26px] tracking-[0.1em] text-white">
-                    QRIS
+                {qrisUrl ? (
+                  <div className="mx-auto size-[220px] overflow-hidden rounded-card border-2 border-navy bg-white p-[10px] shadow-hard">
+                    <Image
+                      src={qrisUrl}
+                      alt="QRIS Valenca"
+                      width={200}
+                      height={200}
+                      sizes="220px"
+                      priority
+                      className="h-full w-full object-contain"
+                    />
                   </div>
-                </div>
+                ) : (
+                  <div className="mx-auto grid size-[220px] place-items-center rounded-card border-2 border-navy bg-white p-[10px] shadow-hard">
+                    <div className="grid h-full w-full place-items-center rounded-lg bg-navy font-display text-[26px] tracking-[0.1em] text-white">
+                      QRIS
+                    </div>
+                  </div>
+                )}
                 <p className="mt-[14px] text-xs text-muted">
                   Nominal terisi otomatis saat dipindai
                 </p>
@@ -565,7 +615,7 @@ export default function PaymentWizard({ product }: { product: Product }) {
                 </Link>
                 <p className="mt-[14px] text-xs text-muted">
                   Butuh bantuan? Chat CS kami di{" "}
-                  <span className="font-bold text-navy">{site.whatsapp}</span>
+                  <span className="font-bold text-navy">{whatsapp}</span>
                 </p>
               </motion.div>
             </AnimatePresence>

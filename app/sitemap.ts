@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/data/products";
-import { site } from "@/data/site";
+import { getProducts, getSite } from "@/lib/data";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [products, site] = await Promise.all([getProducts(), getSite()]);
   const lastModified = new Date();
   return [
     {
@@ -17,6 +17,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
+    {
+      url: `${site.url}/cek-transaksi`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     {
       url: `${site.url}/syarat-ketentuan`,
       lastModified,

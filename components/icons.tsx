@@ -56,6 +56,8 @@ const iconPaths: Record<IconName, React.ReactNode> = {
   ),
 };
 
+export const ICON_NAMES = Object.keys(iconPaths) as IconName[];
+
 type IconProps = {
   name: IconName;
   className?: string;

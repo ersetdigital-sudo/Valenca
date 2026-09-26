@@ -4,12 +4,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PaymentWizard from "@/components/payment/PaymentWizard";
 import JsonLd from "@/components/JsonLd";
-import { getProduct, products } from "@/data/products";
-import { site } from "@/data/site";
+import { cld } from "@/lib/cloudinary";
+import { getImages, getProduct, getProducts, getSite } from "@/lib/data";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -17,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const product = getProduct(id);
+  const product = await getProduct(id);
   if (!product) return {};
   return {
     title: `Bayar ${product.nama}`,
@@ -32,8 +30,15 @@ export default async function BayarPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = getProduct(id);
+  const [product, site, images] = await Promise.all([
+    getProduct(id),
+    getSite(),
+    getImages(),
+  ]);
   if (!product) notFound();
+
+  const prices = product.items.map((i) => i.price);
+  const qrisUrl = cld(images.qris_url, { w: 440, fill: false });
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -46,14 +51,18 @@ export default async function BayarPage({
     offers: {
       "@type": "Offer",
       priceCurrency: "IDR",
-      price: String(Math.min(...product.items.map((i) => i.price))),
+      price: String(prices.length ? Math.min(...prices) : product.admin),
     },
   };
 
   return (
     <>
       <Header variant="home" />
-      <PaymentWizard product={product} />
+      <PaymentWizard
+        product={product}
+        qrisUrl={qrisUrl}
+        whatsapp={site.whatsapp}
+      />
       <Footer variant="home" />
       <JsonLd data={jsonLd} />
     </>

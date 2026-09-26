@@ -3,11 +3,12 @@ import Container from "@/components/Container";
 import SectionHead from "@/components/home/SectionHead";
 import Reveal from "@/components/Reveal";
 import { Icon } from "@/components/icons";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/data";
 
 const cardTints = ["bg-[#E8EDF6]", "bg-[#FFE8DC]", "bg-[#EEF2F8]", "bg-[#FFEFE6]"];
 
-export default function CategoryGrid() {
+export default async function CategoryGrid() {
+  const products = await getProducts();
   return (
     <section id="layanan" className="relative z-10 py-20">
       <Container>

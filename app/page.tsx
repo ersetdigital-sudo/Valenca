@@ -12,9 +12,18 @@ import Testimonials from "@/components/home/Testimonials";
 import FaqSection from "@/components/home/FaqSection";
 import JsonLd from "@/components/JsonLd";
 import { faqs } from "@/data/home";
-import { site } from "@/data/site";
+import { getImages, getSite } from "@/lib/data";
+import { cld } from "@/lib/cloudinary";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const [site, images] = await Promise.all([getSite(), getImages()]);
+  const banners = [
+    { src: cld(images.banner_utama, { w: 1938 }) ?? "/banners/banner-utama.webp", height: 811 },
+    { src: cld(images.banner_data, { w: 1938 }) ?? "/banners/banner-data.webp", height: 812 },
+    { src: cld(images.banner_pln, { w: 1938 }) ?? "/banners/banner-pln.webp", height: 811 },
+  ];
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -51,7 +60,7 @@ export default function HomePage() {
     <>
       <Header variant="home" />
       <main>
-        <Hero />
+        <Hero banners={banners} />
         <TrustBar />
         <CategoryGrid />
         <WhySection />

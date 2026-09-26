@@ -21,3 +21,9 @@ devlog.txt
 
 # raw banner sources (optimized copies live in /public)
 /Banner/
+
+# runtime logs
+.start.log
+
+# supabase local cli temp
+supabase/.temp/

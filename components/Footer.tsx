@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/Container";
 import LogoMark from "@/components/Logo";
-import { products } from "@/data/products";
-import { site } from "@/data/site";
+import { getProducts, getSite } from "@/lib/data";
 
 function Logo() {
   return (
@@ -23,7 +22,12 @@ function Heading({ children }: { children: React.ReactNode }) {
 
 const linkCls = "text-white/75 transition hover:text-white";
 
-export default function Footer({ variant }: { variant: "home" | "legal" }) {
+export default async function Footer({
+  variant,
+}: {
+  variant: "home" | "legal";
+}) {
+  const [products, site] = await Promise.all([getProducts(), getSite()]);
   const year = new Date().getFullYear();
 
   return (
@@ -75,6 +79,11 @@ export default function Footer({ variant }: { variant: "home" | "legal" }) {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/cek-transaksi" className={linkCls}>
+                      Cek Transaksi
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/#faq" className={linkCls}>
                       FAQ
                     </Link>
@@ -123,6 +132,11 @@ export default function Footer({ variant }: { variant: "home" | "legal" }) {
                   <li>
                     <Link href="/#cara" className={linkCls}>
                       Cara Bayar
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/cek-transaksi" className={linkCls}>
+                      Cek Transaksi
                     </Link>
                   </li>
                   <li>

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, DM_Sans } from "next/font/google";
-import { site } from "@/data/site";
+import { getSite } from "@/lib/data";
 import "./globals.css";
 
 const archivo = Archivo_Black({
@@ -17,27 +17,30 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: `${site.name} — ${site.tagline} | PPOB Pulsa, PLN, BPJS`,
-    template: `%s | ${site.name}`,
-  },
-  description: site.description,
-  applicationName: site.name,
-  openGraph: {
-    type: "website",
-    locale: "id_ID",
-    siteName: site.name,
-    title: `${site.name} — ${site.tagline}`,
-    description: site.ogDescription,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
-    description: site.ogDescription,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+  return {
+    metadataBase: new URL(site.url),
+    title: {
+      default: `${site.name} — ${site.tagline} | PPOB Pulsa, PLN, BPJS`,
+      template: `%s | ${site.name}`,
+    },
+    description: site.description,
+    applicationName: site.name,
+    openGraph: {
+      type: "website",
+      locale: "id_ID",
+      siteName: site.name,
+      title: `${site.name} — ${site.tagline}`,
+      description: site.ogDescription,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${site.name} — ${site.tagline}`,
+      description: site.ogDescription,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

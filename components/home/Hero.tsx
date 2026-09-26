@@ -4,22 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/Button";
 
-const slides = [
-  {
-    src: "/banners/banner-utama.webp",
-    height: 811,
-    alt: "Valenca — semua pembayaran dalam satu tempat: pulsa, paket data, token listrik, PDAM, BPJS, dan lainnya",
-  },
-  {
-    src: "/banners/banner-data.webp",
-    height: 812,
-    alt: "Beli paket data lebih murah — Telkomsel, XL, Indosat, Tri, Axis, dan Smartfren",
-  },
-  {
-    src: "/banners/banner-pln.webp",
-    height: 811,
-    alt: "Bayar tagihan listrik dan beli token PLN lebih praktis",
-  },
+const ALTS = [
+  "Valenca — semua pembayaran dalam satu tempat: pulsa, paket data, token listrik, PDAM, BPJS, dan lainnya",
+  "Beli paket data lebih murah — Telkomsel, XL, Indosat, Tri, Axis, dan Smartfren",
+  "Bayar tagihan listrik dan beli token PLN lebih praktis",
+];
+
+const DEFAULT_BANNERS = [
+  { src: "/banners/banner-utama.webp", height: 811 },
+  { src: "/banners/banner-data.webp", height: 812 },
+  { src: "/banners/banner-pln.webp", height: 811 },
 ];
 
 const stats = [
@@ -28,7 +22,12 @@ const stats = [
   { value: "<30 dtk", label: "Proses Otomatis" },
 ];
 
-export default function Hero() {
+export type HeroBanner = { src: string; height: number };
+
+export default function Hero({ banners }: { banners?: HeroBanner[] }) {
+  const slides = (banners && banners.length ? banners : DEFAULT_BANNERS).map(
+    (b, i) => ({ ...b, alt: ALTS[i] ?? "Banner Valenca" }),
+  );
   const [index, setIndex] = useState(0);
   const paused = useRef(false);
 

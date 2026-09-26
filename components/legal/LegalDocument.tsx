@@ -4,16 +4,17 @@ import Container from "@/components/Container";
 import RichText from "@/components/RichText";
 import JsonLd from "@/components/JsonLd";
 import Button from "@/components/Button";
-import { site } from "@/data/site";
+import { getSite } from "@/lib/data";
 import type { LegalDoc } from "@/types";
 
-export default function LegalDocument({
+export default async function LegalDocument({
   doc,
   extraLink,
 }: {
   doc: LegalDoc;
   extraLink: { href: string; label: string };
 }) {
+  const site = await getSite();
   return (
     <>
       <Header variant="legal" extraLink={extraLink} />
