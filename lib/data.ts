@@ -14,6 +14,7 @@ import type {
   SiteSettings,
 } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
+import { ORDER_STATUSES } from "@/types";
 
 const PRODUCT_COLUMNS =
   "id,nama,tag,icon,input_label,placeholder,hint,target_label,min_len,admin_fee,items,sort_order,is_active";
@@ -200,8 +201,6 @@ type OrderRow = {
   status: string;
   created_at: string;
 };
-
-const ORDER_STATUSES: OrderStatus[] = ["pending", "paid", "failed"];
 
 function toOrder(row: OrderRow): Order {
   return {

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Cek Transaksi",
   description:
-    "Cek status pembayaran pesanan Valenca dengan kode transaksi VLC-. Menampilkan status verifikasi QRIS, detail layanan, dan total bayar secara instan.",
+    "Lacak status transaksi Valenca: cek pembayaran, proses pesanan, detail layanan, hingga struk digital. Masukkan nomor transaksi untuk melihatnya secara instan.",
   alternates: { canonical: "/cek-transaksi" },
 };
 

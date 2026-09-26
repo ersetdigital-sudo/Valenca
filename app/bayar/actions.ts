@@ -59,6 +59,8 @@ export async function createOrderAction(input: {
   }
 }
 
+export type CheckOrderErrorCode = "format" | "not_found" | "server";
+
 export type CheckOrderResult =
   | {
       ok: true;
@@ -75,7 +77,7 @@ export type CheckOrderResult =
         createdAt: string;
       };
     }
-  | { ok: false; error: string };
+  | { ok: false; code: CheckOrderErrorCode; message: string };
 
 function maskTarget(value: string): string {
   const v = value.trim();
@@ -88,7 +90,8 @@ export async function checkOrderAction(kodeInput: string): Promise<CheckOrderRes
   if (!/^VLC-\d{8}$/.test(kode)) {
     return {
       ok: false,
-      error: "Format kode tidak valid. Contoh: VLC-96952416.",
+      code: "format",
+      message: "Nomor transaksi tidak ditemukan. Periksa kembali formatnya.",
     };
   }
 
@@ -97,7 +100,8 @@ export async function checkOrderAction(kodeInput: string): Promise<CheckOrderRes
     if (!order) {
       return {
         ok: false,
-        error: "Pesanan tidak ditemukan. Periksa kembali kode transaksimu.",
+        code: "not_found",
+        message: "Nomor transaksi tidak ditemukan pada sistem kami.",
       };
     }
     return {
@@ -119,7 +123,8 @@ export async function checkOrderAction(kodeInput: string): Promise<CheckOrderRes
     console.error("[order] check gagal:", e);
     return {
       ok: false,
-      error: "Gagal memeriksa pesanan. Silakan coba lagi.",
+      code: "server",
+      message: "Layanan sedang tidak tersedia. Coba lagi dalam beberapa saat.",
     };
   }
 }

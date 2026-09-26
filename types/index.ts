@@ -89,8 +89,23 @@ export type SiteImages = {
 
 export type AdminResult = { ok: true } | { ok: false; error: string };
 
-/** Status verifikasi pembayaran sebuah pesanan (DB: public.orders.status). */
-export type OrderStatus = "pending" | "paid" | "failed";
+/** Status pesanan di seluruh lifecycle (DB: public.orders.status). */
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export const ORDER_STATUSES: OrderStatus[] = [
+  "pending",
+  "paid",
+  "processing",
+  "completed",
+  "failed",
+  "cancelled",
+];
 
 /** Pesanan yang dibuat customer saat checkout di halaman /bayar/*. */
 export type Order = {

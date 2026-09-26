@@ -10,6 +10,7 @@ import { publicIdFromUrl } from "@/lib/cloudinary";
 import { destroyImage } from "@/lib/cloudinary-server";
 import { getImages, updateOrderStatus, removeOrder } from "@/lib/data";
 import { supabaseAdmin } from "@/lib/supabase";
+import { ORDER_STATUSES } from "@/types";
 import type { AdminResult, OrderStatus, Product, SiteImages, SiteSettings } from "@/types";
 
 function revalidateAll(): void {
@@ -206,8 +207,6 @@ export async function saveSettingsAction(input: {
     };
   }
 }
-
-const ORDER_STATUSES: OrderStatus[] = ["pending", "paid", "failed"];
 
 export async function setOrderStatusAction(
   kode: string,
