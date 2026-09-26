@@ -238,6 +238,10 @@ export default function ProductManager({ products: initial }: { products: Produc
                 onChange={(e) => patch("tag", e.target.value)}
                 placeholder="Semua Operator"
               />
+              <p className="mt-1.5 text-xs text-ink">
+                Teks kecil di bawah nama pada kartu beranda &amp; halaman bayar,
+                juga masuk deskripsi SEO — contoh: “Telkomsel, XL, Indosat, Tri”
+              </p>
             </div>
             <div>
               <label className={labelCls} htmlFor="p-admin">
