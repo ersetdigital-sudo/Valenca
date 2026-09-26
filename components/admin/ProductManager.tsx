@@ -42,7 +42,7 @@ function emptyDraft(): Product {
 function clientValidate(p: Product): string | null {
   if (!p.nama.trim()) return "Nama produk wajib diisi.";
   if (!p.id.trim())
-    return "Alamat halaman masih kosong — pakai huruf atau angka di nama produk.";
+    return "Nama produk harus mengandung huruf atau angka (jadi alamat halaman).";
   if (p.items.length === 0) return "Minimal satu item harga.";
   for (const it of p.items) {
     if (!it.label.trim()) return "Setiap item wajib punya nama.";
@@ -58,7 +58,6 @@ export default function ProductManager({ products: initial }: { products: Produc
   const [products, setProducts] = useState<Product[]>(initial);
   const [draft, setDraft] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
-  const [idAuto, setIdAuto] = useState(true);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
 
@@ -80,14 +79,12 @@ export default function ProductManager({ products: initial }: { products: Produc
   function startNew() {
     setNotice(null);
     setIsNew(true);
-    setIdAuto(true);
     setDraft(emptyDraft());
   }
 
   function startEdit(p: Product) {
     setNotice(null);
     setIsNew(false);
-    setIdAuto(false);
     setDraft({ ...p, items: p.items.map((it) => ({ ...it })) });
   }
 
@@ -101,7 +98,8 @@ export default function ProductManager({ products: initial }: { products: Produc
 
   async function save() {
     if (!draft) return;
-    const invalid = clientValidate(draft);
+    const payload: Product = isNew ? { ...draft, id: slugify(draft.nama) } : draft;
+    const invalid = clientValidate(payload);
     if (invalid) {
       setNotice({ kind: "err", text: invalid });
       return;
@@ -109,9 +107,9 @@ export default function ProductManager({ products: initial }: { products: Produc
     setPending(true);
     setNotice(null);
     try {
-      const result = await saveProductAction(draft);
+      const result = await saveProductAction(payload);
       if (!(await run(result))) return;
-      const saved: Product = { ...draft, id: draft.id.trim().toLowerCase().replace(/\s+/g, "-") };
+      const saved: Product = payload;
       setProducts((list) =>
         isNew
           ? [...list.filter((p) => p.id !== saved.id), saved]
@@ -222,39 +220,12 @@ export default function ProductManager({ products: initial }: { products: Produc
                   const value = e.target.value;
                   setDraft((d) =>
                     d
-                      ? {
-                          ...d,
-                          nama: value,
-                          id: isNew && idAuto ? slugify(value) : d.id,
-                        }
+                      ? { ...d, nama: value, id: isNew ? slugify(value) : d.id }
                       : d,
                   );
                 }}
                 placeholder="Paket Data"
               />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="p-id">
-                Alamat halaman (ID)
-              </label>
-              <input
-                id="p-id"
-                className={inputCls}
-                value={draft.id}
-                disabled={!isNew}
-                onChange={(e) => {
-                  setIdAuto(false);
-                  patch("id", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
-                }}
-                placeholder="otomatis dari nama"
-              />
-              <p className="mt-1.5 font-mono text-xs text-navy">
-                {draft.id
-                  ? isNew
-                    ? `→ /bayar/${draft.id}`
-                    : `→ /bayar/${draft.id} (tidak bisa diubah)`
-                  : "→ /bayar/… terisi otomatis dari nama"}
-              </p>
             </div>
             <div>
               <label className={labelCls} htmlFor="p-tag">
