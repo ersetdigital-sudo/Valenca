@@ -6,7 +6,16 @@ export type IconName =
   | "bpjs"
   | "internet"
   | "emoney"
-  | "finance";
+  | "finance"
+  | "game"
+  | "voucher"
+  | "tv"
+  | "pajak"
+  | "asuransi"
+  | "donasi"
+  | "tiket"
+  | "gas"
+  | "belanja";
 
 const iconPaths: Record<IconName, React.ReactNode> = {
   pulsa: (
@@ -52,6 +61,59 @@ const iconPaths: Record<IconName, React.ReactNode> = {
       <path d="M6 20V9" />
       <path d="M12 20V4" />
       <path d="M18 20v-7" />
+    </>
+  ),
+  game: (
+    <>
+      <rect x="2" y="7" width="20" height="10" rx="5" />
+      <path d="M7 10v4M5 12h4" />
+      <path d="M16 11h.01" />
+      <path d="M18 13.5h.01" />
+    </>
+  ),
+  voucher: (
+    <>
+      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+      <path d="M7 7h.01" />
+    </>
+  ),
+  tv: (
+    <>
+      <rect x="2" y="4" width="20" height="14" rx="2" />
+      <path d="M12 18v3M8 21h8" />
+      <path d="m10 8.5 4.5 2.5-4.5 2.5z" />
+    </>
+  ),
+  pajak: (
+    <>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8M8 17h5" />
+    </>
+  ),
+  asuransi: (
+    <>
+      <path d="M2 13a10 10 0 0 1 20 0" />
+      <path d="M12 3v16a2 2 0 0 0 4 0" />
+    </>
+  ),
+  donasi: (
+    <path d="M12 21l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18L12 21z" />
+  ),
+  tiket: (
+    <>
+      <path d="M2 9a3 3 0 1 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 1 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" />
+      <path d="M13 5v2M13 11v2M13 17v2" />
+    </>
+  ),
+  gas: (
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+  ),
+  belanja: (
+    <>
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
     </>
   ),
 };
