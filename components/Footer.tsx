@@ -69,7 +69,7 @@ export default async function Footer({
                 <Heading>Perusahaan</Heading>
                 <ul className="flex list-none flex-col gap-[10px] p-0">
                   <li>
-                    <Link href="/#kenapa" className={linkCls}>
+                    <Link href="/tentang-kami" className={linkCls}>
                       Tentang Kami
                     </Link>
                   </li>
@@ -86,6 +86,11 @@ export default async function Footer({
                   <li>
                     <Link href="/#faq" className={linkCls}>
                       FAQ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/bantuan" className={linkCls}>
+                      Bantuan
                     </Link>
                   </li>
                   <li>

@@ -13,6 +13,7 @@ const homeLinks: LinkItem[] = [
   { label: "Cara Bayar", href: "/#cara" },
   { label: "Cek Transaksi", href: "/cek-transaksi" },
   { label: "FAQ", href: "/#faq" },
+  { label: "Bantuan", href: "/bantuan" },
 ];
 
 const legalLinks: LinkItem[] = [
@@ -20,6 +21,7 @@ const legalLinks: LinkItem[] = [
   { label: "Cara Bayar", href: "/#cara" },
   { label: "Cek Transaksi", href: "/cek-transaksi" },
   { label: "FAQ", href: "/#faq" },
+  { label: "Bantuan", href: "/bantuan" },
 ];
 
 export default function Header({
