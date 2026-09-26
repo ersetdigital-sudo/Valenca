@@ -14,6 +14,7 @@ import type {
   SiteSettings,
 } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
+import { waLinkFrom } from "@/lib/wa";
 import { ORDER_STATUSES } from "@/types";
 
 const PRODUCT_COLUMNS =
@@ -166,7 +167,8 @@ function pickStrings<T extends Record<string, unknown>>(
 
 export async function getSite(): Promise<SiteSettings> {
   const value = await readSetting("site");
-  return pickStrings(value, SITE_KEYS, DEFAULT_SITE);
+  const site = pickStrings(value, SITE_KEYS, DEFAULT_SITE);
+  return { ...site, whatsappUrl: waLinkFrom(site.whatsapp, site.whatsappUrl) };
 }
 
 export async function getImages(): Promise<SiteImages> {

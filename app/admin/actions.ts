@@ -10,6 +10,7 @@ import { publicIdFromUrl } from "@/lib/cloudinary";
 import { destroyImage } from "@/lib/cloudinary-server";
 import { getImages, updateOrderStatus, removeOrder } from "@/lib/data";
 import { supabaseAdmin } from "@/lib/supabase";
+import { waLinkFrom } from "@/lib/wa";
 import { ORDER_STATUSES } from "@/types";
 import type { AdminResult, OrderStatus, Product, SiteImages, SiteSettings } from "@/types";
 
@@ -175,10 +176,15 @@ export async function saveSettingsAction(input: {
   try {
     const db = supabaseAdmin();
     const now = new Date().toISOString();
+    const siteValue: SiteSettings = {
+      ...input.site,
+      whatsapp: input.site.whatsapp.trim(),
+      whatsappUrl: waLinkFrom(input.site.whatsapp, input.site.whatsappUrl),
+    };
 
     const { error: siteErr } = await db
       .from("site_settings")
-      .upsert({ key: "site", value: input.site, updated_at: now }, { onConflict: "key" });
+      .upsert({ key: "site", value: siteValue, updated_at: now }, { onConflict: "key" });
     if (siteErr) throw siteErr;
 
     const { error: imgErr } = await db

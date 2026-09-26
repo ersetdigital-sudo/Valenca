@@ -4,6 +4,7 @@ import { useState } from "react";
 import { saveSettingsAction } from "@/app/admin/actions";
 import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
 import type { AllSettings } from "@/lib/data";
+import { waLinkFrom } from "@/lib/wa";
 import type { AdminResult, SiteImages, SiteSettings } from "@/types";
 
 const inputCls =
@@ -20,7 +21,6 @@ const SITE_FIELDS: {
   { key: "tagline", label: "Tagline", placeholder: "Bayar Cepat, Hidup Lebih Ringan" },
   { key: "url", label: "URL utama", placeholder: "https://valenca.id" },
   { key: "whatsapp", label: "Nomor WhatsApp (tampilan)", placeholder: "0812-0000-0000" },
-  { key: "whatsappUrl", label: "Tautan WhatsApp (wa.me)", placeholder: "https://wa.me/628…" },
   { key: "email", label: "Email", placeholder: "halo@valenca.id" },
   { key: "jamLayanan", label: "Jam layanan", placeholder: "24 jam setiap hari" },
   { key: "legalUpdated", label: "Terakhir diperbarui (halaman legal)", placeholder: "24 September 2026" },
@@ -176,13 +176,24 @@ export default function SettingsForm({ initial }: { initial: AllSettings }) {
                   onChange={(e) => setField(f.key, e.target.value)}
                 />
               ) : (
-                <input
-                  id={`site-${f.key}`}
-                  className={inputCls}
-                  value={site[f.key]}
-                  placeholder={f.placeholder}
-                  onChange={(e) => setField(f.key, e.target.value)}
-                />
+                <>
+                  <input
+                    id={`site-${f.key}`}
+                    className={inputCls}
+                    value={site[f.key]}
+                    placeholder={f.placeholder}
+                    onChange={(e) => setField(f.key, e.target.value)}
+                  />
+                  {f.key === "whatsapp" && (
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink">
+                      Tautan WhatsApp dibuat otomatis dan dipakai di seluruh
+                      halaman:{" "}
+                      <span className="font-mono break-all text-navy">
+                        {waLinkFrom(site.whatsapp, site.whatsappUrl)}
+                      </span>
+                    </p>
+                  )}
+                </>
               )}
             </div>
           ))}
