@@ -24,13 +24,13 @@ Full-stack payment point (PPOB) platform for everyday transactions — pulsa, PL
 - Order management with a status flow (confirm payment, mark done, fail with reason)
 - One-screen site settings — copy, contact info, SEO, QRIS image, hero banners — that propagate to every page on save
 - WhatsApp link is **derived automatically** from the phone number: change the number once, every wa.me button on the site updates
-- Cloudinary uploads with signed requests, 2 MB / JPG-PNG-WebP validation, and live preview
+- Image uploads to Supabase Storage, 2 MB / JPG-PNG-WebP validation (checked by file signature), and live preview
 
 **Architecture**
 
 - **DB-first data layer** with static fallback (`data/*.ts`) — the site runs even before the database is seeded
 - Server components by default; client components receive data as props
-- Admin mutations via React server actions; images via signed Cloudinary uploads
+- Admin mutations via React server actions; images via Supabase Storage (bucket `images`)
 
 ## Screenshots
 
@@ -51,7 +51,7 @@ Full-stack payment point (PPOB) platform for everyday transactions — pulsa, PL
 | Styling | Tailwind CSS v4, design tokens in `globals.css` |
 | Motion | Framer Motion |
 | Database | Supabase (Postgres) |
-| Media | Cloudinary (signed uploads, f_auto/q_auto) |
+| Media | Supabase Storage (public bucket `images`) |
 | Receipts | jsPDF |
 | Hosting | Vercel |
 
@@ -71,7 +71,6 @@ Environment variables (see `.env.example`):
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-side DB access |
-| `CLOUDINARY_CLOUD_NAME` / `_API_KEY` / `_API_SECRET` / `_UPLOAD_PRESET` | Signed image uploads |
 | `ADMIN_PASSWORD` | Admin login password |
 | `ADMIN_SESSION_SECRET` | Secret for the HMAC session cookie |
 
@@ -90,7 +89,7 @@ app/                  # App Router pages (home, bayar/[id], cek-transaksi,
                       #   bantuan, tentang-kami, legal pages, admin/*)
 components/           # UI — home, payment wizard, help center, admin panel
 lib/                  # data layer (DB-first + fallback), supabase,
-                      #   cloudinary, auth, wa link helper
+                      #   storage, auth, wa link helper
 data/                 # static fallback content
 types/                # shared TypeScript contracts
 supabase/migrations/  # schema + seed

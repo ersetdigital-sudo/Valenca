@@ -13,16 +13,19 @@ type Props = {
   onChange: (next: string | null) => void;
   /** rasio bingkai preview: "wide" (banner) atau "square" (QRIS) */
   frame?: "wide" | "square";
+  /** subfolder di bucket Supabase Storage */
+  folder?: "qris" | "banner";
 };
 
 type Status = { kind: "idle" | "busy" | "error" | "saved"; text?: string };
 
-export default function CloudinaryUpload({
+export default function ImageUpload({
   label,
   hint,
   value,
   onChange,
   frame = "wide",
+  folder = "banner",
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -45,38 +48,20 @@ export default function CloudinaryUpload({
       return;
     }
 
-    setStatus({ kind: "busy", text: "Mengunggah ke Cloudinary…" });
+    setStatus({ kind: "busy", text: "Mengunggah…" });
     try {
-      const signRes = await fetch("/api/cloudinary/sign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const sign = await signRes.json();
-      if (!signRes.ok) throw new Error(sign.error || "Gagal membuat signature.");
-
       const form = new FormData();
       form.append("file", file);
-      form.append("api_key", sign.apiKey);
-      form.append("timestamp", String(sign.timestamp));
-      form.append("signature", sign.signature);
-      if (sign.uploadPreset) form.append("upload_preset", sign.uploadPreset);
+      form.append("folder", folder);
 
-      const upRes = await fetch(sign.endpoint, { method: "POST", body: form });
-      const payload = await upRes.json();
-      if (!upRes.ok) {
-        throw new Error(payload?.error?.message || "Upload ditolak Cloudinary.");
-      }
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const payload = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok) throw new Error(payload.error || "Upload gagal.");
+      if (!payload.url) throw new Error("URL gambar tidak diterima.");
 
-      const url = payload.secure_url as string;
-      if (value && value !== url && value.includes("res.cloudinary.com")) {
-        void fetch("/api/cloudinary/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: value }),
-        });
-      }
-      onChange(url);
+      // Gambar lama baru dihapus server setelah "Simpan Pengaturan" ditekan,
+      // supaya tidak ada gambar hilang kalau perubahan dibatalkan.
+      onChange(payload.url);
       setStatus({ kind: "saved", text: "Terkirim. Jangan lupa tekan Simpan Pengaturan." });
     } catch (e) {
       setStatus({

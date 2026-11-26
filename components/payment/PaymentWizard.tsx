@@ -511,6 +511,7 @@ export default function PaymentWizard({
                       height={200}
                       sizes="220px"
                       priority
+                      unoptimized
                       className="h-full w-full object-contain"
                     />
                   </div>

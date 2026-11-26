@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { saveSettingsAction } from "@/app/admin/actions";
-import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { AllSettings } from "@/lib/data";
 import { waLinkFrom } from "@/lib/wa";
 import type { AdminResult, SiteImages, SiteSettings } from "@/types";
@@ -138,11 +138,12 @@ export default function SettingsForm({ initial }: { initial: AllSettings }) {
         </p>
         <div className="grid items-start gap-5 sm:grid-cols-2">
           {IMAGE_FIELDS.map((f) => (
-            <CloudinaryUpload
+            <ImageUpload
               key={f.key}
               label={f.label}
               hint={f.hint}
               frame={f.frame}
+              folder={f.key === "qris_url" ? "qris" : "banner"}
               value={images[f.key]}
               onChange={(next) => {
                 setImages((img) => ({ ...img, [f.key]: next }));

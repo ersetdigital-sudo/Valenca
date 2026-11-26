@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PaymentWizard from "@/components/payment/PaymentWizard";
 import JsonLd from "@/components/JsonLd";
-import { cld } from "@/lib/cloudinary";
 import { getImages, getProduct, getProducts, getSite } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +37,7 @@ export default async function BayarPage({
   if (!product) notFound();
 
   const prices = product.items.map((i) => i.price);
-  const qrisUrl = cld(images.qris_url, { w: 440, fill: false });
+  const qrisUrl = images.qris_url;
 
   const jsonLd = {
     "@context": "https://schema.org",

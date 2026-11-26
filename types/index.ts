@@ -79,7 +79,7 @@ export type SiteSettings = {
   legalUpdated: string;
 };
 
-/** Cloudinary-backed images (DB: site_settings.value.images). null = fall back to /public/banners or placeholder. */
+/** Images stored in Supabase Storage (DB: site_settings.value.images). null = fall back to /public/banners or placeholder. */
 export type SiteImages = {
   qris_url: string | null;
   banner_utama: string | null;

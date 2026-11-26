@@ -6,8 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ICON_NAMES } from "@/components/icons";
 import { requireAdmin, sessionCookieName, sessionCookieOptions, createSessionToken } from "@/lib/admin-auth";
-import { publicIdFromUrl } from "@/lib/cloudinary";
-import { destroyImage } from "@/lib/cloudinary-server";
+import { deleteImageByUrl, isStorageUrl } from "@/lib/storage";
 import { getImages, updateOrderStatus, removeOrder } from "@/lib/data";
 import { supabaseAdmin } from "@/lib/supabase";
 import { waLinkFrom } from "@/lib/wa";
@@ -157,8 +156,10 @@ const IMAGE_KEYS = ["qris_url", "banner_utama", "banner_pln", "banner_data"] as 
   if (!site.email?.trim().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return "Email tidak valid.";
   for (const key of IMAGE_KEYS) {
     const value = images?.[key];
-    if (value && !/^https:\/\/res\.cloudinary\.com\//.test(value)) {
-      return `Gambar ${key} bukan URL Cloudinary yang valid.`;
+    // Cloudinary tetap diterima supaya gambar lama yang sudah tersimpan tidak
+    // menghalangi simpan; gambar baru selalu masuk Supabase Storage.
+    if (value && !isStorageUrl(value) && !/^https:\/\/res\.cloudinary\.com\//.test(value)) {
+      return `Gambar ${key} bukan URL yang valid. Unggah lewat tombol "Unggah gambar".`;
     }
   }
   return null;
@@ -196,13 +197,16 @@ export async function saveSettingsAction(input: {
     if (imgErr) throw imgErr;
 
     const previous = await getImages();
-    for (const key of IMAGE_KEYS) {
-      const before = previous[key];
-      const after = input.images[key];
-      if (before && before !== after && publicIdFromUrl(before)) {
-        void destroyImage(before);
-      }
-    }
+    // Hapus gambar lama yang sudah digantikan. Di-await supaya tidak terpotong
+    // saat fungsi serverless selesai; gagal hapus tidak menggagalkan simpan.
+    await Promise.allSettled(
+      IMAGE_KEYS.map((key) => {
+        const before = previous[key];
+        return before && before !== input.images[key] && isStorageUrl(before)
+          ? deleteImageByUrl(before)
+          : Promise.resolve();
+      }),
+    );
 
     revalidateAll();
     return { ok: true };

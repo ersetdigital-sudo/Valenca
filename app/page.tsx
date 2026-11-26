@@ -13,16 +13,15 @@ import FaqSection from "@/components/home/FaqSection";
 import JsonLd from "@/components/JsonLd";
 import { faqs } from "@/data/home";
 import { getImages, getSite } from "@/lib/data";
-import { cld } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [site, images] = await Promise.all([getSite(), getImages()]);
   const banners = [
-    { src: cld(images.banner_utama, { w: 1938 }) ?? "/banners/banner-utama.webp", height: 811 },
-    { src: cld(images.banner_data, { w: 1938 }) ?? "/banners/banner-data.webp", height: 812 },
-    { src: cld(images.banner_pln, { w: 1938 }) ?? "/banners/banner-pln.webp", height: 811 },
+    { src: images.banner_utama ?? "/banners/banner-utama.webp", height: 811 },
+    { src: images.banner_data ?? "/banners/banner-data.webp", height: 812 },
+    { src: images.banner_pln ?? "/banners/banner-pln.webp", height: 811 },
   ];
   const jsonLd = [
     {
